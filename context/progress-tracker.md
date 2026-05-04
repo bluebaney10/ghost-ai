@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Feature spec 05 (pending)
+- Feature spec 06 (pending)
 
 ## Completed
 
@@ -18,6 +18,7 @@ change.
 - Feature spec 02 — Editor chrome: EditorNavbar (fixed top, sidebar toggle with PanelLeftOpen/PanelLeftClose, left/center/right sections) and ProjectSidebar (fixed floating, slides from left, Tabs with My Projects/Shared placeholders, New Project button). Dialog pattern ready via spec 01 components. Build passes.
 - Feature spec 03 — Auth: ClerkProvider wraps root layout with dark theme from @clerk/ui/themes and CSS variable overrides. proxy.ts updated with createRouteMatcher to protect all routes except /sign-in and /sign-up. app/page.tsx redirects auth users to /editor, unauth to /sign-in. Sign-in and sign-up pages use two-panel layout (left: logo+tagline+features hidden on mobile, right: Clerk form). app/editor/page.tsx minimal shell with EditorNavbar and ProjectSidebar. UserButton added to EditorNavbar right section. Build passes.
 - Feature spec 04 — Project dialogs: Editor home screen with heading/description/New Project button. useProjectDialogs hook manages all dialog+form state. CreateProjectDialog (name input + live slug preview), RenameProjectDialog (prefilled, auto-focus, Enter submits), DeleteProjectDialog (destructive confirm). ProjectSidebar updated with mock owned/shared project data, rename/delete actions (owned only, hover-reveal), mobile backdrop scrim. All wired: editor home → Create, sidebar New Project → Create, sidebar rename → Rename, sidebar delete → Delete. Build passes.
+- Feature spec 05 — Prisma: Project and ProjectCollaborator models in prisma/models/project.prisma (multi-file schema). Indexes on ownerId/createdAt (Project) and projectId/createdAt (ProjectCollaborator). Cascade delete on collaborator relation. Unique constraint on projectId+email. Migration 20260504100328_init applied. Prisma client generated to app/generated/prisma/ (Prisma 7.8.0 prisma-client generator). lib/prisma.ts singleton branches on DATABASE_URL prefix: prisma+postgres:// → Accelerate path, otherwise direct PrismaPg adapter. Build passes.
 
 ## In Progress
 
@@ -25,7 +26,7 @@ change.
 
 ## Next Up
 
-- Feature spec 05 (pending)
+- Feature spec 06 (pending)
 
 ## Open Questions
 
@@ -45,6 +46,11 @@ change.
 - Dialog state lives in hooks/use-project-dialogs.ts (useProjectDialogs). All three dialogs share one open/close/target state machine. Dialog components in components/editor/project-dialogs.tsx are controlled (open prop + onOpenChange).
 - Mock project data lives in components/editor/project-sidebar.tsx (MOCK_OWNED_PROJECTS, MOCK_SHARED_PROJECTS). Owned projects show rename/delete actions; shared projects do not.
 - Project type is exported from hooks/use-project-dialogs.ts and imported by the sidebar.
+- Prisma 7.8.0 uses the new `prisma-client` generator (not `prisma-client-js`). Generated client output is app/generated/prisma/; import from `@/app/generated/prisma/client` (no index.ts — use client.ts directly).
+- Prisma 7 requires a driver adapter in PrismaClient constructor — `new PrismaClient({ adapter })`. No-arg constructor is not valid.
+- Schema config is split: prisma/schema.prisma has generator/datasource blocks; models live in prisma/models/*.prisma (multi-file schema, all files in prisma/ are merged).
+- DATABASE_URL is loaded via dotenv in prisma.config.ts. Not loaded automatically by Next.js from .env for Prisma CLI commands.
+- PrismaPg (adapter-pg 7.8.0) constructor accepts pg.Pool | pg.PoolConfig | string — can pass connection string directly.
 
 ## Session Notes
 
