@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Feature spec 03: Auth — Clerk wired into the app with provider, auth pages, redirects, route protection, and user menu.
+- Feature spec 05 (pending)
 
 ## Completed
 
@@ -17,16 +17,15 @@ change.
 - Feature spec 01 — Design system: shadcn/ui initialized (v4.6.0, Tailwind v4 mode), components Button/Card/Dialog/Input/Tabs/Textarea/ScrollArea added to components/ui/, lucide-react installed, lib/utils.ts created with cn() helper. Build passes.
 - Feature spec 02 — Editor chrome: EditorNavbar (fixed top, sidebar toggle with PanelLeftOpen/PanelLeftClose, left/center/right sections) and ProjectSidebar (fixed floating, slides from left, Tabs with My Projects/Shared placeholders, New Project button). Dialog pattern ready via spec 01 components. Build passes.
 - Feature spec 03 — Auth: ClerkProvider wraps root layout with dark theme from @clerk/ui/themes and CSS variable overrides. proxy.ts updated with createRouteMatcher to protect all routes except /sign-in and /sign-up. app/page.tsx redirects auth users to /editor, unauth to /sign-in. Sign-in and sign-up pages use two-panel layout (left: logo+tagline+features hidden on mobile, right: Clerk form). app/editor/page.tsx minimal shell with EditorNavbar and ProjectSidebar. UserButton added to EditorNavbar right section. Build passes.
+- Feature spec 04 — Project dialogs: Editor home screen with heading/description/New Project button. useProjectDialogs hook manages all dialog+form state. CreateProjectDialog (name input + live slug preview), RenameProjectDialog (prefilled, auto-focus, Enter submits), DeleteProjectDialog (destructive confirm). ProjectSidebar updated with mock owned/shared project data, rename/delete actions (owned only, hover-reveal), mobile backdrop scrim. All wired: editor home → Create, sidebar New Project → Create, sidebar rename → Rename, sidebar delete → Delete. Build passes.
 
 ## In Progress
 
 - None.
 
-
-
 ## Next Up
 
-- Feature spec 04 (pending)
+- Feature spec 05 (pending)
 
 ## Open Questions
 
@@ -43,6 +42,9 @@ change.
 - proxy.ts at project root is the Clerk middleware (Next.js 16.2.4 supports this naming — shown as "Proxy (Middleware)" in build output).
 - @clerk/ui/themes exports `dark` theme used as ClerkProvider `theme` prop (Clerk v7 renamed `baseTheme` → `theme`).
 - Clerk appearance variables accept CSS var() strings — used to wire app CSS tokens without hardcoding colors.
+- Dialog state lives in hooks/use-project-dialogs.ts (useProjectDialogs). All three dialogs share one open/close/target state machine. Dialog components in components/editor/project-dialogs.tsx are controlled (open prop + onOpenChange).
+- Mock project data lives in components/editor/project-sidebar.tsx (MOCK_OWNED_PROJECTS, MOCK_SHARED_PROJECTS). Owned projects show rename/delete actions; shared projects do not.
+- Project type is exported from hooks/use-project-dialogs.ts and imported by the sidebar.
 
 ## Session Notes
 
