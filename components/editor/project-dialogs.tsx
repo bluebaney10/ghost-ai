@@ -16,17 +16,19 @@ import { Input } from "@/components/ui/input"
 interface CreateProjectDialogProps {
   open: boolean
   nameInput: string
-  slug: string
+  roomId: string
   setName: (value: string) => void
   onClose: () => void
+  onConfirm: () => void
 }
 
 export function CreateProjectDialog({
   open,
   nameInput,
-  slug,
+  roomId,
   setName,
   onClose,
+  onConfirm,
 }: CreateProjectDialogProps) {
   return (
     <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose() }}>
@@ -39,18 +41,21 @@ export function CreateProjectDialog({
             placeholder="Project name"
             value={nameInput}
             onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && nameInput.trim()) onConfirm()
+            }}
           />
           <div className="h-4">
-            {slug && (
+            {roomId && (
               <p className="text-xs text-muted-foreground">
-                Slug: <span className="font-mono">{slug}</span>
+                Room ID: <span className="font-mono">{roomId}</span>
               </p>
             )}
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button disabled={!nameInput.trim()}>Create</Button>
+          <Button disabled={!nameInput.trim()} onClick={onConfirm}>Create</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -65,6 +70,7 @@ interface RenameProjectDialogProps {
   projectName: string
   setName: (value: string) => void
   onClose: () => void
+  onConfirm: () => void
 }
 
 export function RenameProjectDialog({
@@ -73,6 +79,7 @@ export function RenameProjectDialog({
   projectName,
   setName,
   onClose,
+  onConfirm,
 }: RenameProjectDialogProps) {
   return (
     <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose() }}>
@@ -90,12 +97,12 @@ export function RenameProjectDialog({
           value={nameInput}
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && nameInput.trim()) onClose()
+            if (e.key === 'Enter' && nameInput.trim()) onConfirm()
           }}
         />
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button disabled={!nameInput.trim()}>Rename</Button>
+          <Button disabled={!nameInput.trim()} onClick={onConfirm}>Rename</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -108,12 +115,14 @@ interface DeleteProjectDialogProps {
   open: boolean
   projectName: string
   onClose: () => void
+  onConfirm: () => void
 }
 
 export function DeleteProjectDialog({
   open,
   projectName,
   onClose,
+  onConfirm,
 }: DeleteProjectDialogProps) {
   return (
     <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose() }}>
@@ -128,7 +137,7 @@ export function DeleteProjectDialog({
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button variant="destructive">Delete</Button>
+          <Button variant="destructive" onClick={onConfirm}>Delete</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

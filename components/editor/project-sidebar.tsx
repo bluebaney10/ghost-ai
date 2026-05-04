@@ -5,20 +5,13 @@ import { Pencil, Plus, Trash2, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
-import type { Project } from "@/hooks/use-project-dialogs"
-
-const MOCK_OWNED_PROJECTS: Project[] = [
-  { id: '1', name: 'Architecture v1', slug: 'architecture-v1' },
-  { id: '2', name: 'Design System', slug: 'design-system' },
-]
-
-const MOCK_SHARED_PROJECTS: Project[] = [
-  { id: '3', name: 'Team Workspace', slug: 'team-workspace' },
-]
+import type { Project } from "@/hooks/use-project-actions"
 
 interface ProjectSidebarProps {
   isOpen: boolean
   onClose: () => void
+  ownedProjects: Project[]
+  sharedProjects: Project[]
   onNewProject: () => void
   onRenameProject: (project: Project) => void
   onDeleteProject: (project: Project) => void
@@ -27,6 +20,8 @@ interface ProjectSidebarProps {
 export function ProjectSidebar({
   isOpen,
   onClose,
+  ownedProjects,
+  sharedProjects,
   onNewProject,
   onRenameProject,
   onDeleteProject,
@@ -65,12 +60,12 @@ export function ProjectSidebar({
             </TabsList>
 
             <TabsContent value="my-projects" className="mt-2 flex flex-col gap-0.5">
-              {MOCK_OWNED_PROJECTS.length === 0 ? (
+              {ownedProjects.length === 0 ? (
                 <p className="py-8 text-center text-xs text-muted-foreground">
                   No projects yet.
                 </p>
               ) : (
-                MOCK_OWNED_PROJECTS.map((project) => (
+                ownedProjects.map((project) => (
                   <div
                     key={project.id}
                     className="group flex items-center justify-between rounded-md px-2 py-1.5 hover:bg-muted"
@@ -100,12 +95,12 @@ export function ProjectSidebar({
             </TabsContent>
 
             <TabsContent value="shared" className="mt-2 flex flex-col gap-0.5">
-              {MOCK_SHARED_PROJECTS.length === 0 ? (
+              {sharedProjects.length === 0 ? (
                 <p className="py-8 text-center text-xs text-muted-foreground">
                   No shared projects.
                 </p>
               ) : (
-                MOCK_SHARED_PROJECTS.map((project) => (
+                sharedProjects.map((project) => (
                   <div
                     key={project.id}
                     className="flex items-center rounded-md px-2 py-1.5 hover:bg-muted"
