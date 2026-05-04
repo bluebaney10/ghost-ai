@@ -1,61 +1,130 @@
 "use client"
 
-import { Plus, X } from "lucide-react"
+import { Pencil, Plus, Trash2, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
+import type { Project } from "@/hooks/use-project-dialogs"
+
+const MOCK_OWNED_PROJECTS: Project[] = [
+  { id: '1', name: 'Architecture v1', slug: 'architecture-v1' },
+  { id: '2', name: 'Design System', slug: 'design-system' },
+]
+
+const MOCK_SHARED_PROJECTS: Project[] = [
+  { id: '3', name: 'Team Workspace', slug: 'team-workspace' },
+]
 
 interface ProjectSidebarProps {
   isOpen: boolean
   onClose: () => void
+  onNewProject: () => void
+  onRenameProject: (project: Project) => void
+  onDeleteProject: (project: Project) => void
 }
 
-export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
+export function ProjectSidebar({
+  isOpen,
+  onClose,
+  onNewProject,
+  onRenameProject,
+  onDeleteProject,
+}: ProjectSidebarProps) {
   return (
-    <aside
-      className={cn(
-        "fixed top-12 left-0 z-30 flex h-[calc(100vh-3rem)] w-64 flex-col border-r border-border bg-card transition-transform duration-200",
-        isOpen ? "translate-x-0" : "-translate-x-full"
+    <>
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-20 bg-black/40 md:hidden"
+          onClick={onClose}
+        />
       )}
-    >
-      <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <h2 className="text-sm font-semibold">Projects</h2>
-        <Button variant="ghost" size="icon-sm" onClick={onClose}>
-          <X />
-          <span className="sr-only">Close sidebar</span>
-        </Button>
-      </div>
+      <aside
+        className={cn(
+          "fixed top-12 left-0 z-30 flex h-[calc(100vh-3rem)] w-64 flex-col border-r border-border bg-card transition-transform duration-200",
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        <div className="flex items-center justify-between border-b border-border px-4 py-3">
+          <h2 className="text-sm font-semibold">Projects</h2>
+          <Button variant="ghost" size="icon-sm" onClick={onClose}>
+            <X />
+            <span className="sr-only">Close sidebar</span>
+          </Button>
+        </div>
 
-      <div className="flex flex-1 flex-col overflow-hidden p-3">
-        <Tabs defaultValue="my-projects" className="flex flex-1 flex-col">
-          <TabsList className="w-full">
-            <TabsTrigger value="my-projects" className="flex-1">
-              My Projects
-            </TabsTrigger>
-            <TabsTrigger value="shared" className="flex-1">
-              Shared
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="my-projects">
-            <p className="py-8 text-center text-xs text-muted-foreground">
-              No projects yet.
-            </p>
-          </TabsContent>
-          <TabsContent value="shared">
-            <p className="py-8 text-center text-xs text-muted-foreground">
-              No shared projects.
-            </p>
-          </TabsContent>
-        </Tabs>
-      </div>
+        <div className="flex flex-1 flex-col overflow-hidden p-3">
+          <Tabs defaultValue="my-projects" className="flex flex-1 flex-col">
+            <TabsList className="w-full">
+              <TabsTrigger value="my-projects" className="flex-1">
+                My Projects
+              </TabsTrigger>
+              <TabsTrigger value="shared" className="flex-1">
+                Shared
+              </TabsTrigger>
+            </TabsList>
 
-      <div className="border-t border-border p-3">
-        <Button className="w-full" size="sm">
-          <Plus />
-          New Project
-        </Button>
-      </div>
-    </aside>
+            <TabsContent value="my-projects" className="mt-2 flex flex-col gap-0.5">
+              {MOCK_OWNED_PROJECTS.length === 0 ? (
+                <p className="py-8 text-center text-xs text-muted-foreground">
+                  No projects yet.
+                </p>
+              ) : (
+                MOCK_OWNED_PROJECTS.map((project) => (
+                  <div
+                    key={project.id}
+                    className="group flex items-center justify-between rounded-md px-2 py-1.5 hover:bg-muted"
+                  >
+                    <span className="truncate text-sm">{project.name}</span>
+                    <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        onClick={() => onRenameProject(project)}
+                      >
+                        <Pencil />
+                        <span className="sr-only">Rename</span>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        onClick={() => onDeleteProject(project)}
+                      >
+                        <Trash2 />
+                        <span className="sr-only">Delete</span>
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </TabsContent>
+
+            <TabsContent value="shared" className="mt-2 flex flex-col gap-0.5">
+              {MOCK_SHARED_PROJECTS.length === 0 ? (
+                <p className="py-8 text-center text-xs text-muted-foreground">
+                  No shared projects.
+                </p>
+              ) : (
+                MOCK_SHARED_PROJECTS.map((project) => (
+                  <div
+                    key={project.id}
+                    className="flex items-center rounded-md px-2 py-1.5 hover:bg-muted"
+                  >
+                    <span className="truncate text-sm">{project.name}</span>
+                  </div>
+                ))
+              )}
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        <div className="border-t border-border p-3">
+          <Button className="w-full" size="sm" onClick={onNewProject}>
+            <Plus />
+            New Project
+          </Button>
+        </div>
+      </aside>
+    </>
   )
 }
