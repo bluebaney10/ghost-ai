@@ -122,8 +122,27 @@
     }
   body {
     @apply bg-background text-foreground;
+    overflow: hidden;
     }
   html {
     @apply font-sans;
+    overflow: hidden;
     }
+}
+
+/* Strip ReactFlow default card appearance */
+.react-flow {
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.react-flow__renderer {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.react-flow__minimap {
+  border-radius: var(--radius-md);
+  overflow: hidden;
 }

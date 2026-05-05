@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Feature spec 05 (pending)
+- Feature spec 12 (complete)
 
 ## Completed
 
@@ -18,6 +18,14 @@ change.
 - Feature spec 02 — Editor chrome: EditorNavbar (fixed top, sidebar toggle with PanelLeftOpen/PanelLeftClose, left/center/right sections) and ProjectSidebar (fixed floating, slides from left, Tabs with My Projects/Shared placeholders, New Project button). Dialog pattern ready via spec 01 components. Build passes.
 - Feature spec 03 — Auth: ClerkProvider wraps root layout with dark theme from @clerk/ui/themes and CSS variable overrides. proxy.ts updated with createRouteMatcher to protect all routes except /sign-in and /sign-up. app/page.tsx redirects auth users to /editor, unauth to /sign-in. Sign-in and sign-up pages use two-panel layout (left: logo+tagline+features hidden on mobile, right: Clerk form). app/editor/page.tsx minimal shell with EditorNavbar and ProjectSidebar. UserButton added to EditorNavbar right section. Build passes.
 - Feature spec 04 — Project dialogs: Editor home screen with heading/description/New Project button. useProjectDialogs hook manages all dialog+form state. CreateProjectDialog (name input + live slug preview), RenameProjectDialog (prefilled, auto-focus, Enter submits), DeleteProjectDialog (destructive confirm). ProjectSidebar updated with mock owned/shared project data, rename/delete actions (owned only, hover-reveal), mobile backdrop scrim. All wired: editor home → Create, sidebar New Project → Create, sidebar rename → Rename, sidebar delete → Delete. Build passes.
+- Feature spec 06 — Project APIs: GET /api/projects (list by ownerId, ordered by createdAt desc), POST /api/projects (create, defaults name to "Untitled Project"), PATCH /api/projects/[projectId] (rename, owner-only), DELETE /api/projects/[projectId] (delete, owner-only, 204 no-content). 401 for unauthenticated, 403 for non-owner, 404 if not found. params typed as Promise<{projectId}> per Next.js 16 convention. Build passes.
+- Feature spec 05 — Prisma: Project and ProjectCollaborator models in prisma/models/project.prisma (multi-file schema). Indexes on ownerId/createdAt (Project) and projectId/createdAt (ProjectCollaborator). Cascade delete on collaborator relation. Unique constraint on projectId+email. Migration 20260504100328_init applied. Prisma client generated to app/generated/prisma/ (Prisma 7.8.0 prisma-client generator). lib/prisma.ts singleton branches on DATABASE_URL prefix: prisma+postgres:// → Accelerate path, otherwise direct PrismaPg adapter. Build passes.
+- Feature spec 07 — Wire editor home: app/editor/page.tsx converted to server component; fetches owned projects (by ownerId) and shared projects (by collaborator email) via Prisma, passes both to EditorHomeClient. hooks/use-project-actions.ts created — manages dialog state + mutations (create/rename/delete), generates slug-suffix room ID preview, calls POST/PATCH/DELETE /api/projects, navigates or refreshes on success. POST /api/projects updated to accept optional custom id (slug-based room ID). components/editor/editor-home-client.tsx extracted as client wrapper. ProjectSidebar updated to accept ownedProjects/sharedProjects props (mock data removed). All three dialogs wired with onConfirm callbacks; create dialog shows Room ID preview; rename Enter key submits correctly. Build passes.
+- Feature spec 08 — Workspace shell: app/editor/[roomId]/page.tsx server component with auth redirect and access checks. lib/project-access.ts exports getIdentity() (userId + primary email from Clerk) and getProjectWithAccess() (owner or collaborator check). components/editor/access-denied.tsx centered layout with Lock icon and back link. components/editor/workspace-navbar.tsx shows project name center, Share button and Bot AI toggle right. components/editor/workspace-shell.tsx client wrapper with sidebar + AI panel state; passes activeProjectId to ProjectSidebar for highlight; includes full project mutation dialogs. ProjectSidebar updated with optional activeProjectId prop to highlight current project. Build passes.
+- Feature spec 09 — Share dialog: GET/POST/DELETE /api/projects/[projectId]/collaborators routes with Clerk Backend API enrichment (displayName + avatarUrl via clerkClient().users.getUserList). Owners can invite by email (validated, deduped), remove collaborators, copy project link. Collaborators see read-only list. ShareDialog component fetches on open, optimistically updates list after invite/remove. WorkspaceNavbar wired with onShareClick. WorkspaceShell manages isShareOpen state + isOwner prop passed from page. Build passes.
+- Feature spec 10 — Liveblocks setup: liveblocks.config.ts defines Presence (cursor x/y + isThinking) and UserMeta (displayName, avatarUrl, cursorColor). lib/liveblocks.ts exports lazy-cached Liveblocks node client (getLiveblocks via React cache()) and getCursorColor() deterministic palette helper (10-color fixed palette, hash by userId). POST /api/liveblocks-auth requires Clerk auth, verifies project access via getProjectWithAccess(), calls getOrCreateRoom with defaultAccesses: ["room:write"], returns identifyUser token with displayName/avatarUrl/cursorColor. @liveblocks/node@3.18.5 installed. Build passes.
+- Feature spec 11 — Base canvas: types/canvas.ts defines NodeData (label/color/shape), CanvasNode/CanvasEdge type aliases, canvasNode/canvasEdge string constants. components/editor/canvas.tsx client component uses useLiveblocksFlow (suspense:true, empty initial nodes+edges), ReactFlow with ConnectionMode.Loose + fitView, MiniMap, Background (dot pattern), Cursors. components/editor/canvas-wrapper.tsx client wrapper with LiveblocksProvider (authEndpoint=/api/liveblocks-auth), RoomProvider (initialPresence cursor:null/isThinking:false), inline LbErrorBoundary class component, ClientSideSuspense. WorkspaceShell updated to render CanvasWrapper instead of placeholder. Build passes.
+- Feature spec 12 — Shape panel: types/canvas.ts extended with pill/cylinder/hexagon shapes and DragPayload type. components/editor/shape-panel.tsx floating pill toolbar (bottom-center, z-10) with 6 draggable shape buttons; drag encodes JSON payload via dataTransfer key "application/ghost-ai-shape". components/editor/canvas-node.tsx simple bordered-rect renderer with 4 handles (top/bottom/left/right), border color from data.color. canvas.tsx updated: useLiveblocksFlow<CanvasNode,CanvasEdge> explicit generics, nodeTypes map, rfRef via onInit, dragover/drop handlers (screenToFlowPosition offsets by half node size, onNodesChange add change), module-level counter for unique IDs, ShapePanel rendered below ReactFlow. Build passes.
 
 ## In Progress
 
@@ -25,7 +33,7 @@ change.
 
 ## Next Up
 
-- Feature spec 05 (pending)
+- Feature spec 13 (pending)
 
 ## Open Questions
 
@@ -43,8 +51,25 @@ change.
 - @clerk/ui/themes exports `dark` theme used as ClerkProvider `theme` prop (Clerk v7 renamed `baseTheme` → `theme`).
 - Clerk appearance variables accept CSS var() strings — used to wire app CSS tokens without hardcoding colors.
 - Dialog state lives in hooks/use-project-dialogs.ts (useProjectDialogs). All three dialogs share one open/close/target state machine. Dialog components in components/editor/project-dialogs.tsx are controlled (open prop + onOpenChange).
-- Mock project data lives in components/editor/project-sidebar.tsx (MOCK_OWNED_PROJECTS, MOCK_SHARED_PROJECTS). Owned projects show rename/delete actions; shared projects do not.
-- Project type is exported from hooks/use-project-dialogs.ts and imported by the sidebar.
+- Project type is exported from hooks/use-project-actions.ts and imported by the sidebar and editor-home-client.
+- Button (`@base-ui/react`) does not support `asChild`. Use `buttonVariants()` from `@/components/ui/button` to style a Next.js `<Link>` directly instead.
+- lib/project-access.ts is the single place for Clerk identity resolution and project access checks — always use getIdentity() + getProjectWithAccess() in server components instead of inlining auth logic.
+- Clerk Backend API: `clerkClient` from `@clerk/nextjs/server` is async — use `await clerkClient()` to get the client, then `client.users.getUserList({ emailAddress: [...] })` returns `{ data: User[] }`.
+- CollaboratorDto type is exported from the collaborators route file and imported by the share dialog to keep the type in one place.
+- Prisma 7.8.0 uses the new `prisma-client` generator (not `prisma-client-js`). Generated client output is app/generated/prisma/; import from `@/app/generated/prisma/client` (no index.ts — use client.ts directly).
+- Prisma 7 requires a driver adapter in PrismaClient constructor — `new PrismaClient({ adapter })`. No-arg constructor is not valid.
+- Liveblocks node client (`@liveblocks/node`) validates the secret key at construction time, so the singleton must be lazy. Use `cache()` from React to wrap the constructor — `getLiveblocks()` in `lib/liveblocks.ts`. Never export a module-level `new Liveblocks(...)` instance.
+- Liveblocks auth uses ID tokens (`identifyUser`). Room is created with `defaultAccesses: ["room:write"]` — access is fully controlled by our Prisma check in the auth endpoint, so the room itself is open to anyone our endpoint approves.
+- `identifyUser` first argument is `Identity` which requires both `userId` and `groupIds` fields (use `groupIds: []` when no groups are needed).
+- Liveblocks config file (`liveblocks.config.ts`) uses a global interface augmentation — no imports needed, just `declare global { interface Liveblocks { ... } }` plus `export {}` for module isolation.
+- Liveblocks React Flow canvas uses `useLiveblocksFlow({ suspense: true })` from `@liveblocks/react-flow`. CSS must be imported in the canvas component: `@xyflow/react/dist/style.css`, `@liveblocks/react-ui/styles.css`, `@liveblocks/react-flow/styles.css`.
+- ErrorBoundary for Liveblocks is implemented as an inline class component (`LbErrorBoundary`) in canvas-wrapper.tsx — avoids adding the `react-error-boundary` package dependency.
+- `useLiveblocksFlow` defaults to `N = BuiltInNode`. Always pass explicit generics `useLiveblocksFlow<CanvasNode, CanvasEdge>` — without them, `onNodesChange` types as `OnNodesChange<BuiltInNode>` and rejects custom node data.
+- Drag payload uses the MIME-type-style key `"application/ghost-ai-shape"` for `dataTransfer.setData` — avoids conflicts with browser defaults.
+- Node drop position is offset by half the node size (`clientX - width/2, clientY - height/2`) before `screenToFlowPosition`, centering the new node under the cursor.
+- Schema config is split: prisma/schema.prisma has generator/datasource blocks; models live in prisma/models/*.prisma (multi-file schema, all files in prisma/ are merged).
+- DATABASE_URL is loaded via dotenv in prisma.config.ts. Not loaded automatically by Next.js from .env for Prisma CLI commands.
+- PrismaPg (adapter-pg 7.8.0) constructor accepts pg.Pool | pg.PoolConfig | string — can pass connection string directly.
 
 ## Session Notes
 

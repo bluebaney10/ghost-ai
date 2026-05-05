@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "Bash(npm install *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(npx prisma *)",
+      "Bash(npx tsc *)",
+      "Bash(node -e \"const { PrismaPg } = require\\('@prisma/adapter-pg'\\); console.log\\(typeof PrismaPg\\)\")",
+      "Bash(node *)",
+      "PowerShell(head *)",
+      "Bash(findstr /i \"liveblocks\\\\|xyflow\\\\|react-flow\")"
     ]
   }
 }
