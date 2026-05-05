@@ -10,6 +10,7 @@ import {
   DeleteProjectDialog,
 } from '@/components/editor/project-dialogs'
 import { ShareDialog } from '@/components/editor/share-dialog'
+import { CanvasWrapper } from '@/components/editor/canvas-wrapper'
 import { useProjectActions, type Project } from '@/hooks/use-project-actions'
 
 interface WorkspaceShellProps {
@@ -46,8 +47,8 @@ export function WorkspaceShell({ project, isOwner, ownedProjects, sharedProjects
         onDeleteProject={actions.openDelete}
       />
       <div className="flex flex-1 overflow-hidden pt-12">
-        <main className="flex flex-1 items-center justify-center bg-background">
-          <p className="text-sm text-muted-foreground">Canvas coming soon</p>
+        <main className="relative flex flex-1 overflow-hidden">
+          <CanvasWrapper roomId={project.id} />
         </main>
         {isAiPanelOpen && (
           <aside className="w-80 shrink-0 border-l border-border bg-card">
