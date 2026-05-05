@@ -1,26 +1,31 @@
-"use client"
+"use client";
 
-import { useState } from 'react'
-import { Plus } from 'lucide-react'
+import { useState } from "react";
+import { Plus } from "lucide-react";
 
-import { EditorNavbar } from '@/components/editor/editor-navbar'
-import { ProjectSidebar } from '@/components/editor/project-sidebar'
+import { EditorNavbar } from "@/components/editor/editor-navbar";
+import { ProjectSidebar } from "@/components/editor/project-sidebar";
 import {
   CreateProjectDialog,
   RenameProjectDialog,
   DeleteProjectDialog,
-} from '@/components/editor/project-dialogs'
-import { useProjectActions, type Project } from '@/hooks/use-project-actions'
-import { Button } from '@/components/ui/button'
+} from "@/components/editor/project-dialogs";
+import { ShareDialog } from "@/components/editor/share-dialog";
+import { useProjectActions, type Project } from "@/hooks/use-project-actions";
+import { Button } from "@/components/ui/button";
 
 interface EditorHomeClientProps {
-  ownedProjects: Project[]
-  sharedProjects: Project[]
+  ownedProjects: Project[];
+  sharedProjects: Project[];
 }
 
-export function EditorHomeClient({ ownedProjects, sharedProjects }: EditorHomeClientProps) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const actions = useProjectActions()
+export function EditorHomeClient({
+  ownedProjects,
+  sharedProjects,
+}: EditorHomeClientProps) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [shareProject, setShareProject] = useState<Project | null>(null);
+  const actions = useProjectActions();
 
   return (
     <div className="flex h-screen flex-col">
@@ -36,6 +41,7 @@ export function EditorHomeClient({ ownedProjects, sharedProjects }: EditorHomeCl
         onNewProject={actions.openCreate}
         onRenameProject={actions.openRename}
         onDeleteProject={actions.openDelete}
+        onShareProject={setShareProject}
       />
       <main className="flex flex-1 items-center justify-center pt-12">
         <div className="flex flex-col items-center gap-4 text-center">
@@ -44,7 +50,8 @@ export function EditorHomeClient({ ownedProjects, sharedProjects }: EditorHomeCl
               Create a project or open an existing one
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Start a new architecture workspace, or choose a project from the sidebar.
+              Start a new architecture workspace, or choose a project from the
+              sidebar.
             </p>
           </div>
           <Button onClick={actions.openCreate}>
@@ -53,6 +60,14 @@ export function EditorHomeClient({ ownedProjects, sharedProjects }: EditorHomeCl
           </Button>
         </div>
       </main>
+      {shareProject && (
+        <ShareDialog
+          open={true}
+          onClose={() => setShareProject(null)}
+          projectId={shareProject.id}
+          isOwner={true}
+        />
+      )}
       <CreateProjectDialog
         open={actions.createDialog.open}
         nameInput={actions.createDialog.nameInput}
@@ -76,5 +91,5 @@ export function EditorHomeClient({ ownedProjects, sharedProjects }: EditorHomeCl
         onConfirm={actions.handleDelete}
       />
     </div>
-  )
+  );
 }

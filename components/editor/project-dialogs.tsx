@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Dialog,
@@ -7,19 +7,19 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 // ---- Create Project ----
 
 interface CreateProjectDialogProps {
-  open: boolean
-  nameInput: string
-  roomId: string
-  setName: (value: string) => void
-  onClose: () => void
-  onConfirm: () => void
+  open: boolean;
+  nameInput: string;
+  roomId: string;
+  setName: (value: string) => void;
+  onClose: () => void;
+  onConfirm: () => void;
 }
 
 export function CreateProjectDialog({
@@ -31,7 +31,12 @@ export function CreateProjectDialog({
   onConfirm,
 }: CreateProjectDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose() }}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) onClose();
+      }}
+    >
       <DialogContent showCloseButton={false}>
         <DialogHeader>
           <DialogTitle>Create project</DialogTitle>
@@ -42,7 +47,7 @@ export function CreateProjectDialog({
             value={nameInput}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && nameInput.trim()) onConfirm()
+              if (e.key === "Enter" && nameInput.trim()) onConfirm();
             }}
           />
           <div className="h-4">
@@ -54,23 +59,27 @@ export function CreateProjectDialog({
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button disabled={!nameInput.trim()} onClick={onConfirm}>Create</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button disabled={!nameInput.trim()} onClick={onConfirm}>
+            Create
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
 // ---- Rename Project ----
 
 interface RenameProjectDialogProps {
-  open: boolean
-  nameInput: string
-  projectName: string
-  setName: (value: string) => void
-  onClose: () => void
-  onConfirm: () => void
+  open: boolean;
+  nameInput: string;
+  projectName: string;
+  setName: (value: string) => void;
+  onClose: () => void;
+  onConfirm: () => void;
 }
 
 export function RenameProjectDialog({
@@ -82,12 +91,17 @@ export function RenameProjectDialog({
   onConfirm,
 }: RenameProjectDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose() }}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) onClose();
+      }}
+    >
       <DialogContent showCloseButton={false}>
         <DialogHeader>
           <DialogTitle>Rename project</DialogTitle>
           <DialogDescription>
-            Renaming{' '}
+            Renaming{" "}
             <span className="font-medium text-foreground">{projectName}</span>
           </DialogDescription>
         </DialogHeader>
@@ -97,25 +111,29 @@ export function RenameProjectDialog({
           value={nameInput}
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && nameInput.trim()) onConfirm()
+            if (e.key === "Enter" && nameInput.trim()) onConfirm();
           }}
         />
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button disabled={!nameInput.trim()} onClick={onConfirm}>Rename</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button disabled={!nameInput.trim()} onClick={onConfirm}>
+            Rename
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
 // ---- Delete Project ----
 
 interface DeleteProjectDialogProps {
-  open: boolean
-  projectName: string
-  onClose: () => void
-  onConfirm: () => void
+  open: boolean;
+  projectName: string;
+  onClose: () => void;
+  onConfirm: () => void;
 }
 
 export function DeleteProjectDialog({
@@ -125,21 +143,30 @@ export function DeleteProjectDialog({
   onConfirm,
 }: DeleteProjectDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose() }}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) onClose();
+      }}
+    >
       <DialogContent showCloseButton={false}>
         <DialogHeader>
           <DialogTitle>Delete project</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete{' '}
+            Are you sure you want to delete{" "}
             <span className="font-medium text-foreground">{projectName}</span>?
             This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button variant="destructive" onClick={onConfirm}>Delete</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button variant="destructive" onClick={onConfirm}>
+            Delete
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

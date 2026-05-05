@@ -1,6 +1,6 @@
 "use client"
 
-import { Pencil, Plus, Trash2, X } from "lucide-react"
+import { Pencil, Plus, Share2, Trash2, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -12,9 +12,11 @@ interface ProjectSidebarProps {
   onClose: () => void
   ownedProjects: Project[]
   sharedProjects: Project[]
+  activeProjectId?: string
   onNewProject: () => void
   onRenameProject: (project: Project) => void
   onDeleteProject: (project: Project) => void
+  onShareProject?: (project: Project) => void
 }
 
 export function ProjectSidebar({
@@ -22,9 +24,11 @@ export function ProjectSidebar({
   onClose,
   ownedProjects,
   sharedProjects,
+  activeProjectId,
   onNewProject,
   onRenameProject,
   onDeleteProject,
+  onShareProject,
 }: ProjectSidebarProps) {
   return (
     <>
@@ -68,10 +72,23 @@ export function ProjectSidebar({
                 ownedProjects.map((project) => (
                   <div
                     key={project.id}
-                    className="group flex items-center justify-between rounded-md px-2 py-1.5 hover:bg-muted"
+                    className={cn(
+                      "group flex items-center justify-between rounded-md px-2 py-1.5 hover:bg-muted",
+                      project.id === activeProjectId && "bg-muted"
+                    )}
                   >
                     <span className="truncate text-sm">{project.name}</span>
                     <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                      {onShareProject && (
+                        <Button
+                          variant="ghost"
+                          size="icon-xs"
+                          onClick={() => onShareProject(project)}
+                        >
+                          <Share2 />
+                          <span className="sr-only">Share</span>
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="icon-xs"
