@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Feature spec 09 (complete)
+- Feature spec 10 (complete)
 
 ## Completed
 
@@ -23,6 +23,7 @@ change.
 - Feature spec 07 — Wire editor home: app/editor/page.tsx converted to server component; fetches owned projects (by ownerId) and shared projects (by collaborator email) via Prisma, passes both to EditorHomeClient. hooks/use-project-actions.ts created — manages dialog state + mutations (create/rename/delete), generates slug-suffix room ID preview, calls POST/PATCH/DELETE /api/projects, navigates or refreshes on success. POST /api/projects updated to accept optional custom id (slug-based room ID). components/editor/editor-home-client.tsx extracted as client wrapper. ProjectSidebar updated to accept ownedProjects/sharedProjects props (mock data removed). All three dialogs wired with onConfirm callbacks; create dialog shows Room ID preview; rename Enter key submits correctly. Build passes.
 - Feature spec 08 — Workspace shell: app/editor/[roomId]/page.tsx server component with auth redirect and access checks. lib/project-access.ts exports getIdentity() (userId + primary email from Clerk) and getProjectWithAccess() (owner or collaborator check). components/editor/access-denied.tsx centered layout with Lock icon and back link. components/editor/workspace-navbar.tsx shows project name center, Share button and Bot AI toggle right. components/editor/workspace-shell.tsx client wrapper with sidebar + AI panel state; passes activeProjectId to ProjectSidebar for highlight; includes full project mutation dialogs. ProjectSidebar updated with optional activeProjectId prop to highlight current project. Build passes.
 - Feature spec 09 — Share dialog: GET/POST/DELETE /api/projects/[projectId]/collaborators routes with Clerk Backend API enrichment (displayName + avatarUrl via clerkClient().users.getUserList). Owners can invite by email (validated, deduped), remove collaborators, copy project link. Collaborators see read-only list. ShareDialog component fetches on open, optimistically updates list after invite/remove. WorkspaceNavbar wired with onShareClick. WorkspaceShell manages isShareOpen state + isOwner prop passed from page. Build passes.
+- Feature spec 10 — Liveblocks setup: liveblocks.config.ts defines Presence (cursor x/y + isThinking) and UserMeta (displayName, avatarUrl, cursorColor). lib/liveblocks.ts exports lazy-cached Liveblocks node client (getLiveblocks via React cache()) and getCursorColor() deterministic palette helper (10-color fixed palette, hash by userId). POST /api/liveblocks-auth requires Clerk auth, verifies project access via getProjectWithAccess(), calls getOrCreateRoom with defaultAccesses: ["room:write"], returns identifyUser token with displayName/avatarUrl/cursorColor. @liveblocks/node@3.18.5 installed. Build passes.
 
 ## In Progress
 
@@ -30,7 +31,7 @@ change.
 
 ## Next Up
 
-- Feature spec 10 (pending)
+- Feature spec 11 (pending)
 
 ## Open Questions
 
@@ -55,6 +56,10 @@ change.
 - CollaboratorDto type is exported from the collaborators route file and imported by the share dialog to keep the type in one place.
 - Prisma 7.8.0 uses the new `prisma-client` generator (not `prisma-client-js`). Generated client output is app/generated/prisma/; import from `@/app/generated/prisma/client` (no index.ts — use client.ts directly).
 - Prisma 7 requires a driver adapter in PrismaClient constructor — `new PrismaClient({ adapter })`. No-arg constructor is not valid.
+- Liveblocks node client (`@liveblocks/node`) validates the secret key at construction time, so the singleton must be lazy. Use `cache()` from React to wrap the constructor — `getLiveblocks()` in `lib/liveblocks.ts`. Never export a module-level `new Liveblocks(...)` instance.
+- Liveblocks auth uses ID tokens (`identifyUser`). Room is created with `defaultAccesses: ["room:write"]` — access is fully controlled by our Prisma check in the auth endpoint, so the room itself is open to anyone our endpoint approves.
+- `identifyUser` first argument is `Identity` which requires both `userId` and `groupIds` fields (use `groupIds: []` when no groups are needed).
+- Liveblocks config file (`liveblocks.config.ts`) uses a global interface augmentation — no imports needed, just `declare global { interface Liveblocks { ... } }` plus `export {}` for module isolation.
 - Schema config is split: prisma/schema.prisma has generator/datasource blocks; models live in prisma/models/*.prisma (multi-file schema, all files in prisma/ are merged).
 - DATABASE_URL is loaded via dotenv in prisma.config.ts. Not loaded automatically by Next.js from .env for Prisma CLI commands.
 - PrismaPg (adapter-pg 7.8.0) constructor accepts pg.Pool | pg.PoolConfig | string — can pass connection string directly.
