@@ -27,7 +27,7 @@ export function WorkspaceShell({ project, isOwner, ownedProjects, sharedProjects
   const actions = useProjectActions(project.id)
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="h-screen">
       <WorkspaceNavbar
         projectName={project.name}
         isSidebarOpen={isSidebarOpen}
@@ -46,18 +46,16 @@ export function WorkspaceShell({ project, isOwner, ownedProjects, sharedProjects
         onRenameProject={actions.openRename}
         onDeleteProject={actions.openDelete}
       />
-      <div className="flex flex-1 overflow-hidden pt-12">
-        <main className="relative flex flex-1 overflow-hidden">
-          <CanvasWrapper roomId={project.id} />
-        </main>
-        {isAiPanelOpen && (
-          <aside className="w-80 shrink-0 border-l border-border bg-card">
-            <div className="flex h-full items-center justify-center">
-              <p className="text-sm text-muted-foreground">AI chat coming soon</p>
-            </div>
-          </aside>
-        )}
-      </div>
+      <main className="fixed inset-0 top-12">
+        <CanvasWrapper roomId={project.id} />
+      </main>
+      {isAiPanelOpen && (
+        <aside className="fixed right-0 top-12 bottom-0 z-20 w-80 border-l border-border bg-card shadow-xl">
+          <div className="flex h-full items-center justify-center">
+            <p className="text-sm text-muted-foreground">AI chat coming soon</p>
+          </div>
+        </aside>
+      )}
       <ShareDialog
         open={isShareOpen}
         onClose={() => setIsShareOpen(false)}

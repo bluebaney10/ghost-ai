@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Feature spec 11 (complete)
+- Feature spec 12 (complete)
 
 ## Completed
 
@@ -25,6 +25,7 @@ change.
 - Feature spec 09 — Share dialog: GET/POST/DELETE /api/projects/[projectId]/collaborators routes with Clerk Backend API enrichment (displayName + avatarUrl via clerkClient().users.getUserList). Owners can invite by email (validated, deduped), remove collaborators, copy project link. Collaborators see read-only list. ShareDialog component fetches on open, optimistically updates list after invite/remove. WorkspaceNavbar wired with onShareClick. WorkspaceShell manages isShareOpen state + isOwner prop passed from page. Build passes.
 - Feature spec 10 — Liveblocks setup: liveblocks.config.ts defines Presence (cursor x/y + isThinking) and UserMeta (displayName, avatarUrl, cursorColor). lib/liveblocks.ts exports lazy-cached Liveblocks node client (getLiveblocks via React cache()) and getCursorColor() deterministic palette helper (10-color fixed palette, hash by userId). POST /api/liveblocks-auth requires Clerk auth, verifies project access via getProjectWithAccess(), calls getOrCreateRoom with defaultAccesses: ["room:write"], returns identifyUser token with displayName/avatarUrl/cursorColor. @liveblocks/node@3.18.5 installed. Build passes.
 - Feature spec 11 — Base canvas: types/canvas.ts defines NodeData (label/color/shape), CanvasNode/CanvasEdge type aliases, canvasNode/canvasEdge string constants. components/editor/canvas.tsx client component uses useLiveblocksFlow (suspense:true, empty initial nodes+edges), ReactFlow with ConnectionMode.Loose + fitView, MiniMap, Background (dot pattern), Cursors. components/editor/canvas-wrapper.tsx client wrapper with LiveblocksProvider (authEndpoint=/api/liveblocks-auth), RoomProvider (initialPresence cursor:null/isThinking:false), inline LbErrorBoundary class component, ClientSideSuspense. WorkspaceShell updated to render CanvasWrapper instead of placeholder. Build passes.
+- Feature spec 12 — Shape panel: types/canvas.ts extended with pill/cylinder/hexagon shapes and DragPayload type. components/editor/shape-panel.tsx floating pill toolbar (bottom-center, z-10) with 6 draggable shape buttons; drag encodes JSON payload via dataTransfer key "application/ghost-ai-shape". components/editor/canvas-node.tsx simple bordered-rect renderer with 4 handles (top/bottom/left/right), border color from data.color. canvas.tsx updated: useLiveblocksFlow<CanvasNode,CanvasEdge> explicit generics, nodeTypes map, rfRef via onInit, dragover/drop handlers (screenToFlowPosition offsets by half node size, onNodesChange add change), module-level counter for unique IDs, ShapePanel rendered below ReactFlow. Build passes.
 
 ## In Progress
 
@@ -32,7 +33,7 @@ change.
 
 ## Next Up
 
-- Feature spec 12 (pending)
+- Feature spec 13 (pending)
 
 ## Open Questions
 
@@ -63,6 +64,9 @@ change.
 - Liveblocks config file (`liveblocks.config.ts`) uses a global interface augmentation — no imports needed, just `declare global { interface Liveblocks { ... } }` plus `export {}` for module isolation.
 - Liveblocks React Flow canvas uses `useLiveblocksFlow({ suspense: true })` from `@liveblocks/react-flow`. CSS must be imported in the canvas component: `@xyflow/react/dist/style.css`, `@liveblocks/react-ui/styles.css`, `@liveblocks/react-flow/styles.css`.
 - ErrorBoundary for Liveblocks is implemented as an inline class component (`LbErrorBoundary`) in canvas-wrapper.tsx — avoids adding the `react-error-boundary` package dependency.
+- `useLiveblocksFlow` defaults to `N = BuiltInNode`. Always pass explicit generics `useLiveblocksFlow<CanvasNode, CanvasEdge>` — without them, `onNodesChange` types as `OnNodesChange<BuiltInNode>` and rejects custom node data.
+- Drag payload uses the MIME-type-style key `"application/ghost-ai-shape"` for `dataTransfer.setData` — avoids conflicts with browser defaults.
+- Node drop position is offset by half the node size (`clientX - width/2, clientY - height/2`) before `screenToFlowPosition`, centering the new node under the cursor.
 - Schema config is split: prisma/schema.prisma has generator/datasource blocks; models live in prisma/models/*.prisma (multi-file schema, all files in prisma/ are merged).
 - DATABASE_URL is loaded via dotenv in prisma.config.ts. Not loaded automatically by Next.js from .env for Prisma CLI commands.
 - PrismaPg (adapter-pg 7.8.0) constructor accepts pg.Pool | pg.PoolConfig | string — can pass connection string directly.

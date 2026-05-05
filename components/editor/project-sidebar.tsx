@@ -40,7 +40,7 @@ export function ProjectSidebar({
       )}
       <aside
         className={cn(
-          "fixed top-12 left-0 z-30 flex h-[calc(100vh-3rem)] w-64 flex-col border-r border-border bg-card transition-transform duration-200",
+          "fixed top-12 left-0 z-30 flex h-[calc(100vh-3rem)] w-64 flex-col overflow-hidden border-r border-border bg-card shadow-xl transition-transform duration-200",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >

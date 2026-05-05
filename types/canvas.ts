@@ -3,7 +3,13 @@ import type { Node, Edge } from "@xyflow/react";
 export type NodeData = {
   label: string;
   color: string;
-  shape: "rectangle" | "circle" | "diamond";
+  shape: "rectangle" | "circle" | "diamond" | "pill" | "cylinder" | "hexagon";
+};
+
+export type DragPayload = {
+  shape: NodeData["shape"];
+  width: number;
+  height: number;
 };
 
 export type CanvasNode = Node<NodeData>;
